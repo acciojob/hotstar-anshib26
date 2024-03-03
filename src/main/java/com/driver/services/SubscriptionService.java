@@ -67,7 +67,7 @@ public class SubscriptionService {
         oldCost = user.getSubscription().getTotalAmountPaid();
 
         if(user.getSubscription().getSubscriptionType().equals(SubscriptionType.ELITE)){
-            throw new Exception("Already the best Subscription");
+            throw new Exception("Already the best Sgtubscription");
         }
         else if(user.getSubscription().getSubscriptionType().equals(SubscriptionType.PRO)) {
             Date d = new Date();
