@@ -37,22 +37,24 @@ public class SubscriptionService {
         Date d = new Date();
         subscription.setStartSubscriptionDate(d);
 
+        int totalAmount = 0;
         if(subscriptionEntryDto.getSubscriptionType().equals(SubscriptionType.BASIC)){
-            subscription.setTotalAmountPaid(500 + (200 * subscriptionEntryDto.getNoOfScreensRequired()));
+            totalAmount = 500 + (200 * subscriptionEntryDto.getNoOfScreensRequired());
         }
         else if(subscriptionEntryDto.getSubscriptionType().equals(SubscriptionType.PRO)){
-            subscription.setTotalAmountPaid(800 + (250 * subscriptionEntryDto.getNoOfScreensRequired()));
+            totalAmount = 800 + (250 * subscriptionEntryDto.getNoOfScreensRequired());
         }
         else if (subscriptionEntryDto.getSubscriptionType().equals(SubscriptionType.ELITE)){
-            subscription.setTotalAmountPaid(1000 + (350 * subscriptionEntryDto.getNoOfScreensRequired()));
+            totalAmount = 1000 + (350 * subscriptionEntryDto.getNoOfScreensRequired());
         }
+        subscription.setTotalAmountPaid(totalAmount);
 
         subscription.setUser(user);
         user.setSubscription(subscription);
 
         User savedUser = userRepository.save(user);
 
-        return subscriptionRepository.save(subscription).getTotalAmountPaid();
+        return totalAmount;
 
     }
 
@@ -67,7 +69,7 @@ public class SubscriptionService {
         oldCost = user.getSubscription().getTotalAmountPaid();
 
         if(user.getSubscription().getSubscriptionType().equals(SubscriptionType.ELITE)){
-            throw new Exception("Already the best Sgtubscription");
+            throw new Exception("Already the best Subscription");
         }
         else if(user.getSubscription().getSubscriptionType().equals(SubscriptionType.PRO)) {
             Date d = new Date();
