@@ -85,9 +85,10 @@ public class SubscriptionService {
             user.getSubscription().setStartSubscriptionDate(d);
         }
 
-        userRepository.save(user); //subscriptionRepository.save(user.getSubscription());
+        //userRepository.save(user);
+        subscriptionRepository.save(user.getSubscription());
 
-        return newCost-oldCost;
+        return (newCost-oldCost);
     }
 
     public Integer calculateTotalRevenueOfHotstar(){
