@@ -27,36 +27,33 @@ public class SubscriptionService {
 
         //Save The subscription Object into the Db and return the total Amount that user has to pay
 
-        Optional<User> optionalUser = userRepository.findById(subscriptionEntryDto.getUserId());
-        if(optionalUser.isPresent()){
+        User user = userRepository.findById(subscriptionEntryDto.getUserId()).get();
 
-            User user = optionalUser.get();
-            Subscription subscription = new Subscription();
+        Subscription subscription = new Subscription();
 
-            subscription.setSubscriptionType(subscriptionEntryDto.getSubscriptionType());
-            subscription.setNoOfScreensSubscribed(subscriptionEntryDto.getNoOfScreensRequired());
+        subscription.setSubscriptionType(subscriptionEntryDto.getSubscriptionType());
+        subscription.setNoOfScreensSubscribed(subscriptionEntryDto.getNoOfScreensRequired());
 
-            Date d = new Date();
-            subscription.setStartSubscriptionDate(d);
+        Date d = new Date();
+        subscription.setStartSubscriptionDate(d);
 
-            if(subscriptionEntryDto.getSubscriptionType().equals(SubscriptionType.BASIC)){
-                subscription.setTotalAmountPaid(500 + 200 * subscriptionEntryDto.getNoOfScreensRequired());
-            }
-            else if(subscriptionEntryDto.getSubscriptionType().equals(SubscriptionType.PRO)){
-                subscription.setTotalAmountPaid(800 + 250 * subscriptionEntryDto.getNoOfScreensRequired());
-            }
-            else{
-                subscription.setTotalAmountPaid(1000 + 350 * subscriptionEntryDto.getNoOfScreensRequired());
-            }
-
-            subscription.setUser(user);
-            user.setSubscription(subscription);
-
-            User savedUser = userRepository.save(user);
-
-            return savedUser.getSubscription().getTotalAmountPaid();
+        if(subscriptionEntryDto.getSubscriptionType().equals(SubscriptionType.BASIC)){
+            subscription.setTotalAmountPaid(500 + 200 * subscriptionEntryDto.getNoOfScreensRequired());
         }
-        return null;
+        else if(subscriptionEntryDto.getSubscriptionType().equals(SubscriptionType.PRO)){
+            subscription.setTotalAmountPaid(800 + 250 * subscriptionEntryDto.getNoOfScreensRequired());
+        }
+        else{
+            subscription.setTotalAmountPaid(1000 + 350 * subscriptionEntryDto.getNoOfScreensRequired());
+        }
+
+        subscription.setUser(user);
+        user.setSubscription(subscription);
+
+        User savedUser = userRepository.save(user);
+
+        return savedUser.getSubscription().getTotalAmountPaid();
+
     }
 
     public Integer upgradeSubscription(Integer userId)throws Exception{
@@ -66,25 +63,29 @@ public class SubscriptionService {
         //update the subscription in the repository
 
         int oldCost = 0, newCost = 0;
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if(optionalUser.isPresent()){
-            User user = optionalUser.get();
-            if(user.getSubscription().getSubscriptionType().equals(SubscriptionType.ELITE)){
-                throw new Exception("Already the best Subscription");
-            }
-            else if(user.getSubscription().getSubscriptionType().equals(SubscriptionType.PRO)) {
-                user.getSubscription().setSubscriptionType(SubscriptionType.ELITE);
-                oldCost = user.getSubscription().getTotalAmountPaid();
-                newCost = 1000 + 350 * user.getSubscription().getNoOfScreensSubscribed();
-                user.getSubscription().setTotalAmountPaid(newCost);
-            }
-            else{
-                user.getSubscription().setSubscriptionType(SubscriptionType.PRO);
-                oldCost = user.getSubscription().getTotalAmountPaid();
-                newCost = 800 + 250 * user.getSubscription().getNoOfScreensSubscribed();
-                user.getSubscription().setTotalAmountPaid(newCost);
-            }
+        User user = userRepository.findById(userId).get();
+
+        if(user.getSubscription().getSubscriptionType().equals(SubscriptionType.ELITE)){
+            throw new Exception("Already the best Subscription");
         }
+        else if(user.getSubscription().getSubscriptionType().equals(SubscriptionType.PRO)) {
+            Date d = new Date();
+            user.getSubscription().setSubscriptionType(SubscriptionType.ELITE);
+            oldCost = user.getSubscription().getTotalAmountPaid();
+            newCost = 1000 + 350 * user.getSubscription().getNoOfScreensSubscribed();
+            user.getSubscription().setTotalAmountPaid(newCost);
+            user.getSubscription().setStartSubscriptionDate(d);
+        }
+        else{
+            Date d = new Date();
+            user.getSubscription().setSubscriptionType(SubscriptionType.PRO);
+            oldCost = user.getSubscription().getTotalAmountPaid();
+            newCost = 800 + 250 * user.getSubscription().getNoOfScreensSubscribed();
+            user.getSubscription().setTotalAmountPaid(newCost);
+            user.getSubscription().setStartSubscriptionDate(d);
+        }
+
+        userRepository.save(user); //subscriptionRepository.save(user.getSubscription());
 
         return newCost-oldCost;
     }

@@ -12,5 +12,5 @@ public interface WebSeriesRepository extends JpaRepository<WebSeries,Integer> {
 
     //List<WebSeries> findBySubscriptionType(SubscriptionType subscriptionType);
 
-    List<WebSeries> findBySubscriptionTypeAndAgeLimitLessThanEqual(SubscriptionType subscriptionType, int ageLimit);
+    List<WebSeries> findBySubscriptionTypeAndAgeLimitLessThanEqual(SubscriptionType subscriptionType, int age);
 }

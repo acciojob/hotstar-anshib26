@@ -32,27 +32,19 @@ public class WebSeriesService {
         if(optionalWebSeries != null){
             throw new Exception("Series is already present");
         }
-        else{
-            Optional<ProductionHouse> optionalProductionHouse = productionHouseRepository.findById(webSeriesEntryDto.getProductionHouseId());
 
+        ProductionHouse ph = productionHouseRepository.findById(webSeriesEntryDto.getProductionHouseId()).get();
 
-            WebSeries ws = new WebSeries(webSeriesEntryDto.getSeriesName(), webSeriesEntryDto.getAgeLimit(), webSeriesEntryDto.getRating(), webSeriesEntryDto.getSubscriptionType());
-            ProductionHouse ph = optionalProductionHouse.get();
+        WebSeries ws = new WebSeries(webSeriesEntryDto.getSeriesName(), webSeriesEntryDto.getAgeLimit(), webSeriesEntryDto.getRating(), webSeriesEntryDto.getSubscriptionType());
 
-            ws.setProductionHouse(ph);
-            ph.getWebSeriesList().add(ws);
+        ph.setRatings((ph.getRatings()+ws.getRating())/2);
 
-            double sum = 0.0;
-            List<WebSeries> webSeries = ph.getWebSeriesList();
-            for (WebSeries webSer : webSeries) {
-                sum = sum + webSer.getRating();
-            }
-            ph.setRatings(sum/(webSeries.size()));
+        ws.setProductionHouse(ph);
+        ph.getWebSeriesList().add(ws);
 
-            ProductionHouse savedObj = productionHouseRepository.save(ph);
+        ProductionHouse savedObj = productionHouseRepository.save(ph);
 
-            return savedObj.getWebSeriesList().get(savedObj.getWebSeriesList().size()-1).getId();
+        return savedObj.getWebSeriesList().get(savedObj.getWebSeriesList().size()-1).getId();
 
-        }
     }
 }
