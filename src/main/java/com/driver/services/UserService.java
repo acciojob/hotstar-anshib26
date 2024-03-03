@@ -36,30 +36,26 @@ public class UserService {
         //Return the count of all webSeries that a user can watch based on his ageLimit and subscriptionType
         //Hint: Take out all the Webseries from the WebRepository
 
-//      //List<WebSeries> basicWebSeries = webSeriesRepository.findBySubscriptionType(SubscriptionType.BASIC);
-//      //List<WebSeries> proWebSeries = webSeriesRepository.findBySubscriptionType(SubscriptionType.PRO);
-//      //List<WebSeries> eliteWebSeries = webSeriesRepository.findBySubscriptionType(SubscriptionType.ELITE);
-
         int count = 0;
         User user = userRepository.findById(userId).get();
 
         SubscriptionType subType = user.getSubscription().getSubscriptionType();
+        List<WebSeries> webSeries = webSeriesRepository.findAll();
 
-        List<WebSeries> watchable = webSeriesRepository.findBySubscriptionTypeAndAgeLimitLessThanEqual(SubscriptionType.BASIC, user.getAge());
+        for(WebSeries ws : webSeries){
+            if(ws.getAgeLimit() <= user.getAge()){
+                if(subType.equals(SubscriptionType.ELITE)){
+                    count++;
+                }
+                else if(subType.equals(SubscriptionType.PRO) && (ws.getSubscriptionType().equals(SubscriptionType.BASIC) || ws.getSubscriptionType().equals(SubscriptionType.PRO))){
+                    count++;
+                }
+                else if(subType.equals(SubscriptionType.BASIC) && (ws.getSubscriptionType().equals(SubscriptionType.BASIC))){
+                    count++;
+                }
+            }
+        }
 
-        if(subType.equals(SubscriptionType.BASIC)){
-        }
-        else if(subType.equals(SubscriptionType.PRO)){
-            List<WebSeries> proWatchable = webSeriesRepository.findBySubscriptionTypeAndAgeLimitLessThanEqual(subType, user.getAge());
-            watchable.addAll(proWatchable);
-        }
-        else{
-            List<WebSeries> proWatchable = webSeriesRepository.findBySubscriptionTypeAndAgeLimitLessThanEqual(SubscriptionType.PRO, user.getAge());
-            List<WebSeries> eliteWatchable = webSeriesRepository.findBySubscriptionTypeAndAgeLimitLessThanEqual(subType, user.getAge());
-            watchable.addAll(proWatchable);
-            watchable.addAll(eliteWatchable);
-        }
-
-        return watchable.size();
+        return count;
     }
 }

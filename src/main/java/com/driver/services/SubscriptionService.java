@@ -52,7 +52,7 @@ public class SubscriptionService {
 
         User savedUser = userRepository.save(user);
 
-        return savedUser.getSubscription().getTotalAmountPaid();
+        return subscriptionRepository.save(subscription).getTotalAmountPaid();
 
     }
 

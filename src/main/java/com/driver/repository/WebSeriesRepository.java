@@ -9,8 +9,4 @@ import java.util.List;
 public interface WebSeriesRepository extends JpaRepository<WebSeries,Integer> {
 
     WebSeries findBySeriesName(String seriesName);
-
-    //List<WebSeries> findBySubscriptionType(SubscriptionType subscriptionType);
-
-    List<WebSeries> findBySubscriptionTypeAndAgeLimitLessThanEqual(SubscriptionType subscriptionType, int age);
 }
