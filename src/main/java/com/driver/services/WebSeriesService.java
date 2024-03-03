@@ -35,27 +35,24 @@ public class WebSeriesService {
         else{
             Optional<ProductionHouse> optionalProductionHouse = productionHouseRepository.findById(webSeriesEntryDto.getProductionHouseId());
 
-            if(optionalProductionHouse.isPresent()){
-                WebSeries ws = new WebSeries(webSeriesEntryDto.getSeriesName(), webSeriesEntryDto.getAgeLimit(), webSeriesEntryDto.getRating(), webSeriesEntryDto.getSubscriptionType());
-                ProductionHouse ph = optionalProductionHouse.get();
 
-                ws.setProductionHouse(ph);
-                ph.getWebSeriesList().add(ws);
+            WebSeries ws = new WebSeries(webSeriesEntryDto.getSeriesName(), webSeriesEntryDto.getAgeLimit(), webSeriesEntryDto.getRating(), webSeriesEntryDto.getSubscriptionType());
+            ProductionHouse ph = optionalProductionHouse.get();
 
-                double sum = 0.0;
-                List<WebSeries> webSeries = ph.getWebSeriesList();
-                for (WebSeries webSer : webSeries) {
-                    sum = sum + webSer.getRating();
-                }
-                ph.setRatings(sum/(webSeries.size()));
+            ws.setProductionHouse(ph);
+            ph.getWebSeriesList().add(ws);
 
-                ProductionHouse savedObj = productionHouseRepository.save(ph);
-
-                return savedObj.getWebSeriesList().get(savedObj.getWebSeriesList().size()-1).getId();
+            double sum = 0.0;
+            List<WebSeries> webSeries = ph.getWebSeriesList();
+            for (WebSeries webSer : webSeries) {
+                sum = sum + webSer.getRating();
             }
+            ph.setRatings(sum/(webSeries.size()));
 
-            return null;
+            ProductionHouse savedObj = productionHouseRepository.save(ph);
+
+            return savedObj.getWebSeriesList().get(savedObj.getWebSeriesList().size()-1).getId();
+
         }
     }
-
 }
