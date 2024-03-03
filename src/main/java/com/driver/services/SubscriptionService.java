@@ -38,13 +38,13 @@ public class SubscriptionService {
         subscription.setStartSubscriptionDate(d);
 
         if(subscriptionEntryDto.getSubscriptionType().equals(SubscriptionType.BASIC)){
-            subscription.setTotalAmountPaid(500 + 200 * subscriptionEntryDto.getNoOfScreensRequired());
+            subscription.setTotalAmountPaid(500 + (200 * subscriptionEntryDto.getNoOfScreensRequired()));
         }
         else if(subscriptionEntryDto.getSubscriptionType().equals(SubscriptionType.PRO)){
-            subscription.setTotalAmountPaid(800 + 250 * subscriptionEntryDto.getNoOfScreensRequired());
+            subscription.setTotalAmountPaid(800 + (250 * subscriptionEntryDto.getNoOfScreensRequired()));
         }
-        else{
-            subscription.setTotalAmountPaid(1000 + 350 * subscriptionEntryDto.getNoOfScreensRequired());
+        else if (subscriptionEntryDto.getSubscriptionType().equals(SubscriptionType.ELITE)){
+            subscription.setTotalAmountPaid(1000 + (350 * subscriptionEntryDto.getNoOfScreensRequired()));
         }
 
         subscription.setUser(user);
@@ -62,25 +62,24 @@ public class SubscriptionService {
         //In all other cases just try to upgrade the subscription and tell the difference of price that user has to pay
         //update the subscription in the repository
 
-        int oldCost = 0, newCost = 0;
+        int oldCost, newCost = 0;
         User user = userRepository.findById(userId).get();
+        oldCost = user.getSubscription().getTotalAmountPaid();
 
         if(user.getSubscription().getSubscriptionType().equals(SubscriptionType.ELITE)){
             throw new Exception("Already the best Subscription");
         }
         else if(user.getSubscription().getSubscriptionType().equals(SubscriptionType.PRO)) {
             Date d = new Date();
+            newCost = 1000 + (350 * user.getSubscription().getNoOfScreensSubscribed());
             user.getSubscription().setSubscriptionType(SubscriptionType.ELITE);
-            oldCost = user.getSubscription().getTotalAmountPaid();
-            newCost = 1000 + 350 * user.getSubscription().getNoOfScreensSubscribed();
             user.getSubscription().setTotalAmountPaid(newCost);
             user.getSubscription().setStartSubscriptionDate(d);
         }
-        else{
+        else if(user.getSubscription().getSubscriptionType().equals(SubscriptionType.BASIC)){
             Date d = new Date();
+            newCost = 800 + (250 * user.getSubscription().getNoOfScreensSubscribed());
             user.getSubscription().setSubscriptionType(SubscriptionType.PRO);
-            oldCost = user.getSubscription().getTotalAmountPaid();
-            newCost = 800 + 250 * user.getSubscription().getNoOfScreensSubscribed();
             user.getSubscription().setTotalAmountPaid(newCost);
             user.getSubscription().setStartSubscriptionDate(d);
         }
